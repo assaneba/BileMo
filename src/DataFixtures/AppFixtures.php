@@ -31,25 +31,24 @@ class AppFixtures extends Fixture
             $manager->persist($phone);
         }
 
+        foreach ($this->userData() as $aUserArray) {
+            $user = new User();
+            $password = $this->encoder->encodePassword($user, $aUserArray["password"]);
+            $user->setEmail($aUserArray["email"])
+                ->setRole(["ROLE_ADMIN"]);
+            $user->setPassword($password);
+
+            $manager->persist($user);
+        }
+
         foreach ($this->customerData() as $aCustomArray) {
             $customer = new Customer();
             $customer->setFirstName($aCustomArray["firstName"])
                      ->setLastName($aCustomArray["lastName"])
                      ->setEmail($aCustomArray["email"])
                      ->setLogin($aCustomArray["login"])
+                     ->setUser($user)
                 ;
-
-            foreach ($this->userData() as $aUserArray) {
-                $user = new User();
-                $password = $this->encoder->encodePassword($user, $aUserArray["password"]);
-                $user->setEmail($aUserArray["email"])
-                    ->setRole(["ROLE_ADMIN"]);
-                $user->setPassword($password);
-
-                $manager->persist($user);
-                $customer->setUser($user);
-            }
-
             $manager->persist($customer);
         }
 
