@@ -38,7 +38,7 @@ class Customer
     private $login;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers")
+     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="customers", cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
      */
     private $user;
