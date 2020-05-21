@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\PhoneRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
  * @ORM\Entity(repositoryClass=PhoneRepository::class)
@@ -14,31 +15,37 @@ class Phone
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"list", "detail"})
      */
     private $model;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Groups({"list", "detail"})
      */
     private $brand;
 
     /**
      * @ORM\Column(type="integer")
+     * @Groups({"list", "detail"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="text")
+     * @Groups({"detail"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="date", nullable=true)
+     * @Groups({"detail"})
      */
     private $releaseDate;
 
