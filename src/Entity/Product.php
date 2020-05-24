@@ -2,50 +2,43 @@
 
 namespace App\Entity;
 
-use App\Repository\PhoneRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
 
 /**
- * @ORM\Entity(repositoryClass=PhoneRepository::class)
+ * @ORM\Entity(repositoryClass=ProductRepository::class)
  */
-class Phone
+class Product
 {
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
-     * @Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list", "detail"})
      */
     private $model;
 
     /**
      * @ORM\Column(type="string", length=255)
-     * @Groups({"list", "detail"})
      */
     private $brand;
 
     /**
      * @ORM\Column(type="integer")
-     * @Groups({"list", "detail"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="text")
-     * @Groups({"detail"})
      */
     private $description;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
-     * @Groups({"detail"})
+     * @ORM\Column(type="date")
      */
     private $releaseDate;
 
@@ -107,7 +100,7 @@ class Phone
         return $this->releaseDate;
     }
 
-    public function setReleaseDate(?\DateTimeInterface $releaseDate): self
+    public function setReleaseDate(\DateTimeInterface $releaseDate): self
     {
         $this->releaseDate = $releaseDate;
 
