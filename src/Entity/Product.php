@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
+use JMS\Serializer\Annotation as Serializer;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
@@ -14,31 +15,37 @@ class Product
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
+     * @Serializer\Groups({"list", "detail"})
      */
     private $id;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"list", "detail"})
      */
     private $model;
 
     /**
      * @ORM\Column(type="string", length=255)
+     * @Serializer\Groups({"list", "detail"})
      */
     private $brand;
 
     /**
      * @ORM\Column(type="integer")
+     * @Serializer\Groups({"detail"})
      */
     private $price;
 
     /**
      * @ORM\Column(type="text")
+     * @Serializer\Groups({"detail"})
      */
     private $description;
 
     /**
      * @ORM\Column(type="date")
+     * @Serializer\Groups({"detail"})
      */
     private $releaseDate;
 
