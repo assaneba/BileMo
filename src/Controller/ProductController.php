@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\Product;
 use App\Repository\ProductRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -19,18 +21,23 @@ class ProductController extends AbstractController
     /**
      * @Rest\Get(
      *     path="/",
-     *     name="product_list"
+     *     name="product_list",
      * )
      * @Rest\View(
      *     statusCode= 200,
      *     serializerGroups={"list"}
      * )
      */
-    public function allProducts(ProductRepository $productRepository)
+    public function allProducts(ProductRepository $productRepository, PaginatorInterface $paginator, Request $request)
     {
-        $phones = $productRepository->findAll();
+        $query = $productRepository->allProductsQuery();
+        $paginatedProducts = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1),
+            7
+        );
 
-        return $phones;
+        return $paginatedProducts->getItems();
     }
 
     /**

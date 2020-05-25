@@ -33,7 +33,7 @@ class Product
 
     /**
      * @ORM\Column(type="integer")
-     * @Serializer\Groups({"detail"})
+     * @Serializer\Groups({"list", "detail"})
      */
     private $price;
 
