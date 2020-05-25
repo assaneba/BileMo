@@ -2,13 +2,13 @@
 
 namespace App\Entity;
 
-use App\Repository\PhoneRepository;
+use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=PhoneRepository::class)
+ * @ORM\Entity(repositoryClass=ProductRepository::class)
  */
-class Phone
+class Product
 {
     /**
      * @ORM\Id()
@@ -38,7 +38,7 @@ class Phone
     private $description;
 
     /**
-     * @ORM\Column(type="date", nullable=true)
+     * @ORM\Column(type="date")
      */
     private $releaseDate;
 
@@ -100,7 +100,7 @@ class Phone
         return $this->releaseDate;
     }
 
-    public function setReleaseDate(?\DateTimeInterface $releaseDate): self
+    public function setReleaseDate(\DateTimeInterface $releaseDate): self
     {
         $this->releaseDate = $releaseDate;
 
