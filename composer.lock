@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4452486d51e92a319b7806cf3cda1104",
+    "content-hash": "aa137966da79f8cef4c2db3b0ed6aefb",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2458,6 +2458,220 @@
                 "symfony"
             ],
             "time": "2020-04-28T06:16:13+00:00"
+        },
+        {
+            "name": "lcobucci/jwt",
+            "version": "3.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lcobucci/jwt.git",
+                "reference": "56f10808089e38623345e28af2f2d5e4eb579455"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lcobucci/jwt/zipball/56f10808089e38623345e28af2f2d5e4eb579455",
+                "reference": "56f10808089e38623345e28af2f2d5e4eb579455",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "ext-openssl": "*",
+                "php": "^5.6 || ^7.0"
+            },
+            "require-dev": {
+                "mikey179/vfsstream": "~1.5",
+                "phpmd/phpmd": "~2.2",
+                "phpunit/php-invoker": "~1.1",
+                "phpunit/phpunit": "^5.7 || ^7.3",
+                "squizlabs/php_codesniffer": "~2.3"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.1-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lcobucci\\JWT\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Luís Otávio Cobucci Oblonczyk",
+                    "email": "lcobucci@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "A simple library to work with JSON Web Token and JSON Web Signature",
+            "keywords": [
+                "JWS",
+                "jwt"
+            ],
+            "time": "2020-05-22T08:21:12+00:00"
+        },
+        {
+            "name": "lexik/jwt-authentication-bundle",
+            "version": "v2.6.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/lexik/LexikJWTAuthenticationBundle.git",
+                "reference": "448551fc08c6cff37aad9d8f27f6b9615cd28966"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/lexik/LexikJWTAuthenticationBundle/zipball/448551fc08c6cff37aad9d8f27f6b9615cd28966",
+                "reference": "448551fc08c6cff37aad9d8f27f6b9615cd28966",
+                "shasum": ""
+            },
+            "require": {
+                "ext-openssl": "*",
+                "lcobucci/jwt": "^3.2",
+                "namshi/jose": "^7.2",
+                "php": "^5.5|^7.0",
+                "symfony/framework-bundle": "^3.4|^4.0|^5.0",
+                "symfony/security-bundle": "^3.4|^4.0|^5.0"
+            },
+            "require-dev": {
+                "symfony/browser-kit": "^3.4|^4.0|^5.0",
+                "symfony/console": "^3.4|^4.0|^5.0",
+                "symfony/dom-crawler": "^3.4|^4.0|^5.0",
+                "symfony/phpunit-bridge": "^3.4|^4.0|^5.0",
+                "symfony/var-dumper": "^3.4|^4.0|^5.0",
+                "symfony/yaml": "^3.4|^4.0|^5.0"
+            },
+            "suggest": {
+                "gesdinet/jwt-refresh-token-bundle": "Implements a refresh token system over Json Web Tokens in Symfony",
+                "spomky-labs/lexik-jose-bridge": "Provides a JWT Token encoder with encryption support"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lexik\\Bundle\\JWTAuthenticationBundle\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Jeremy Barthe",
+                    "email": "j.barthe@lexik.fr",
+                    "homepage": "https://github.com/jeremyb"
+                },
+                {
+                    "name": "Nicolas Cabot",
+                    "email": "n.cabot@lexik.fr",
+                    "homepage": "https://github.com/slashfan"
+                },
+                {
+                    "name": "Cedric Girard",
+                    "email": "c.girard@lexik.fr",
+                    "homepage": "https://github.com/cedric-g"
+                },
+                {
+                    "name": "Dev Lexik",
+                    "email": "dev@lexik.fr",
+                    "homepage": "https://github.com/lexik"
+                },
+                {
+                    "name": "Robin Chalas",
+                    "email": "robin.chalas@gmail.com",
+                    "homepage": "https://github.com/chalasr"
+                },
+                {
+                    "name": "Lexik Community",
+                    "homepage": "https://github.com/lexik/LexikJWTAuthenticationBundle/graphs/contributors"
+                }
+            ],
+            "description": "This bundle provides JWT authentication for your Symfony REST API",
+            "homepage": "https://github.com/lexik/LexikJWTAuthenticationBundle",
+            "keywords": [
+                "Authentication",
+                "JWS",
+                "api",
+                "bundle",
+                "jwt",
+                "rest",
+                "symfony"
+            ],
+            "time": "2019-11-22T14:22:26+00:00"
+        },
+        {
+            "name": "namshi/jose",
+            "version": "7.2.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/namshi/jose.git",
+                "reference": "89a24d7eb3040e285dd5925fcad992378b82bcff"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/namshi/jose/zipball/89a24d7eb3040e285dd5925fcad992378b82bcff",
+                "reference": "89a24d7eb3040e285dd5925fcad992378b82bcff",
+                "shasum": ""
+            },
+            "require": {
+                "ext-date": "*",
+                "ext-hash": "*",
+                "ext-json": "*",
+                "ext-pcre": "*",
+                "ext-spl": "*",
+                "php": ">=5.5",
+                "symfony/polyfill-php56": "^1.0"
+            },
+            "require-dev": {
+                "phpseclib/phpseclib": "^2.0",
+                "phpunit/phpunit": "^4.5|^5.0",
+                "satooshi/php-coveralls": "^1.0"
+            },
+            "suggest": {
+                "ext-openssl": "Allows to use OpenSSL as crypto engine.",
+                "phpseclib/phpseclib": "Allows to use Phpseclib as crypto engine, use version ^2.0."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Namshi\\JOSE\\": "src/Namshi/JOSE/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alessandro Nadalin",
+                    "email": "alessandro.nadalin@gmail.com"
+                },
+                {
+                    "name": "Alessandro Cinelli (cirpo)",
+                    "email": "alessandro.cinelli@gmail.com"
+                }
+            ],
+            "description": "JSON Object Signing and Encryption library for PHP.",
+            "keywords": [
+                "JSON Web Signature",
+                "JSON Web Token",
+                "JWS",
+                "json",
+                "jwt",
+                "token"
+            ],
+            "time": "2016-12-05T07:27:31+00:00"
         },
         {
             "name": "ocramius/package-versions",
@@ -5314,6 +5528,99 @@
             "description": "Symfony TwigBundle",
             "homepage": "https://symfony.com",
             "time": "2020-04-15T15:55:41+00:00"
+        },
+        {
+            "name": "symfony/validator",
+            "version": "v4.4.8",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/validator.git",
+                "reference": "1780dff34d756f924ed7bb4f1cd94a7f9685eb69"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/validator/zipball/1780dff34d756f924ed7bb4f1cd94a7f9685eb69",
+                "reference": "1780dff34d756f924ed7bb4f1cd94a7f9685eb69",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1.3",
+                "symfony/polyfill-ctype": "~1.8",
+                "symfony/polyfill-mbstring": "~1.0",
+                "symfony/translation-contracts": "^1.1|^2"
+            },
+            "conflict": {
+                "doctrine/lexer": "<1.0.2",
+                "phpunit/phpunit": "<4.8.35|<5.4.3,>=5.0",
+                "symfony/dependency-injection": "<3.4",
+                "symfony/http-kernel": "<4.4",
+                "symfony/intl": "<4.3",
+                "symfony/translation": ">=5.0",
+                "symfony/yaml": "<3.4"
+            },
+            "require-dev": {
+                "doctrine/annotations": "~1.7",
+                "doctrine/cache": "~1.0",
+                "egulias/email-validator": "^2.1.10",
+                "symfony/cache": "^3.4|^4.0|^5.0",
+                "symfony/config": "^3.4|^4.0|^5.0",
+                "symfony/dependency-injection": "^3.4|^4.0|^5.0",
+                "symfony/expression-language": "^3.4|^4.0|^5.0",
+                "symfony/http-client": "^4.3|^5.0",
+                "symfony/http-foundation": "^4.1|^5.0",
+                "symfony/http-kernel": "^4.4",
+                "symfony/intl": "^4.3|^5.0",
+                "symfony/mime": "^4.4|^5.0",
+                "symfony/property-access": "^3.4|^4.0|^5.0",
+                "symfony/property-info": "^3.4|^4.0|^5.0",
+                "symfony/translation": "^4.2",
+                "symfony/yaml": "^3.4|^4.0|^5.0"
+            },
+            "suggest": {
+                "doctrine/annotations": "For using the annotation mapping. You will also need doctrine/cache.",
+                "doctrine/cache": "For using the default cached annotation reader.",
+                "egulias/email-validator": "Strict (RFC compliant) email validation",
+                "psr/cache-implementation": "For using the mapping cache.",
+                "symfony/config": "",
+                "symfony/expression-language": "For using the Expression validator",
+                "symfony/http-foundation": "",
+                "symfony/intl": "",
+                "symfony/property-access": "For accessing properties within comparison constraints",
+                "symfony/property-info": "To automatically add NotNull and Type constraints",
+                "symfony/translation": "For translating validation errors.",
+                "symfony/yaml": ""
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "4.4-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Component\\Validator\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony Validator Component",
+            "homepage": "https://symfony.com",
+            "time": "2020-04-28T18:23:58+00:00"
         },
         {
             "name": "symfony/var-dumper",

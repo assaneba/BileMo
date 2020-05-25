@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
@@ -22,24 +23,31 @@ class Product
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"list", "detail"})
+     * @Assert\NotBlank()
+     * @Assert\Length(max="25", maxMessage="Too much caracters for model name")
      */
     private $model;
 
     /**
      * @ORM\Column(type="string", length=255)
      * @Serializer\Groups({"list", "detail"})
+     * @Assert\NotBlank()
+     * @Assert\Length(max="25", maxMessage="Too much caracters for brand name")
      */
     private $brand;
 
     /**
      * @ORM\Column(type="integer")
      * @Serializer\Groups({"list", "detail"})
+     * @Assert\NotBlank()
+     * @Assert\Range(min="0")
      */
     private $price;
 
     /**
      * @ORM\Column(type="text")
      * @Serializer\Groups({"detail"})
+     * @Assert\NotBlank()
      */
     private $description;
 
