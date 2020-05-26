@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * Class ProductController
  * @package App\Controller
- * @Route("/api/phones", name="api")
+ * @Route("/api/products", name="api")
  */
 class ProductController extends AbstractController
 {
