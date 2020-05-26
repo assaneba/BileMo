@@ -24,9 +24,7 @@ class SecurityController extends AbstractController
      *     path="/login",
      *     name="login"
      * )
-     * @Rest\View(
-     *     statusCode= 200
-     * )
+     * @Rest\View(statusCode= 200)
      */
     public function login()
     {
