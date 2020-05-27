@@ -4,9 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
-use function count;
 use Doctrine\ORM\EntityManagerInterface;
-use function dump;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
@@ -90,5 +88,25 @@ class CustomerController extends AbstractController
         $manager->flush();
 
         return $customer;
+    }
+
+    /**
+     * @param Customer $customer
+     * @param EntityManagerInterface $manager
+     * @return string
+     *
+     * @Rest\Delete(
+     *     path="/{id}",
+     *     name="customer_delete"
+     * )
+     * @Rest\View(statusCode= 204)
+     */
+    public function deleteCustomer(Customer $customer, EntityManagerInterface $manager)
+    {
+        $manager->remove($customer);
+        $manager->flush();
+        $successMessage = ['success' => 'Customer deleted !'];
+
+        return $this->json($successMessage);
     }
 }
