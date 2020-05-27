@@ -4,11 +4,17 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
+use function count;
+use Doctrine\ORM\EntityManagerInterface;
+use function dump;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * Class CustomerController
@@ -17,7 +23,13 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CustomerController extends AbstractController
 {
+
     /**
+     * @param CustomerRepository $customerRepository
+     * @param PaginatorInterface $paginator
+     * @param Request $request
+     * @return iterable
+     *
      * @Rest\Get(
      *     path="/",
      *     name="customers_list"
@@ -37,6 +49,9 @@ class CustomerController extends AbstractController
     }
 
     /**
+     * @param Customer $customer
+     * @return Customer
+     *
      * @Rest\Get(
      *     path="/{id}",
      *     name="customer_show"
@@ -45,6 +60,35 @@ class CustomerController extends AbstractController
      */
     public function aCustomer(Customer $customer)
     {
+        return $customer;
+    }
+
+
+    /**
+     * @param Customer $customer
+     * @param EntityManagerInterface $manager
+     * @param ValidatorInterface $validator
+     * @return Customer
+     * @throws \Exception
+     *
+     * @Rest\Post(
+     *     path="/",
+     *     name="customer_add"
+     * )
+     * @Rest\View(statusCode= 201)
+     * @ParamConverter("customer", converter="fos_rest.request_body")
+     */
+    public function addCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator)
+    {
+        $errors = $validator->validate($customer);
+        if(count($errors)) {
+            throw new \Exception($errors);
+        }
+        $customer->setUser($this->getUser());
+
+        $manager->persist($customer);
+        $manager->flush();
+
         return $customer;
     }
 }
