@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Repository\CustomerRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
+use JMS\Serializer\ArrayTransformerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -105,8 +106,54 @@ class CustomerController extends AbstractController
     {
         $manager->remove($customer);
         $manager->flush();
-        $successMessage = ['success' => 'Customer deleted !'];
+        $successMessage = ['message' => 'Customer deleted !'];
 
         return $this->json($successMessage);
+    }
+
+
+    /**
+     * @param Customer $customer
+     * @param EntityManagerInterface $manager
+     * @param ValidatorInterface $validator
+     * @param Request $request
+     * @param ArrayTransformerInterface $arrayTransformer
+     * @return object|null
+     * @throws \Exception
+     *
+     * @Rest\Put(
+     *     path="/{id}",
+     *     name="customer_update"
+     * )
+     * @Rest\View(statusCode= 200)
+     * @ParamConverter("customer", converter="fos_rest.request_body")
+     */
+    public function updateCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator, Request $request, ArrayTransformerInterface $arrayTransformer)
+    {
+        $customerUpdater = $manager->getRepository(Customer::class)->find($request->get('id'));
+
+        // Check if some values have changed and set them in existing object
+        $customer = $arrayTransformer->toArray($customer);
+        foreach ($customer  as $key => $value) {
+            if($key && !empty($value)) {
+                $keyPiece = explode('_', $key);
+                foreach ($keyPiece as $index => $piece) {
+                    $piece = ucfirst($piece);
+                    $keyPiece[$index] = $piece;
+                }
+
+                $name = implode($keyPiece);
+                $setter = 'set'.$name;
+                $customerUpdater->$setter($value);
+            }
+        }
+
+        $errors = $validator->validate($customerUpdater);
+        if (count($errors)) {
+            throw new \Exception('Invalid argument(s) detected');
+        }
+        $manager->flush();
+
+        return $customerUpdater;
     }
 }
