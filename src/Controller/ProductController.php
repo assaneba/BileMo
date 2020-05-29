@@ -6,6 +6,7 @@ use App\Entity\Product;
 use App\Repository\ProductRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +19,13 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class ProductController extends AbstractController
 {
+
     /**
+     * @param ProductRepository $productRepository
+     * @param PaginatorInterface $paginator
+     * @param Request $request
+     * @return iterable
+     *
      * @Rest\Get(
      *     path="/",
      *     name="product_list",
@@ -27,6 +34,7 @@ class ProductController extends AbstractController
      *     statusCode= 200,
      *     serializerGroups={"list"}
      * )
+     * @Cache(expires="tomorrow", public=true)
      */
     public function allProducts(ProductRepository $productRepository, PaginatorInterface $paginator, Request $request)
     {
@@ -43,6 +51,7 @@ class ProductController extends AbstractController
     /**
      * @param Product $product
      * @return Product
+     *
      * @Rest\Get(
      *     path="/{id}",
      *     name="product_show",
@@ -52,6 +61,7 @@ class ProductController extends AbstractController
      *     statusCode= 200,
      *     serializerGroups={"detail"}
      * )
+     * @Cache(expires="tomorrow", public=true)
      */
     public function aProduct(Product $product)
     {

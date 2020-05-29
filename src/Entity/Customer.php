@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
+ *
  * @Serializer\ExclusionPolicy("All")
  */
 class Customer

@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\ArrayTransformerInterface;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +35,7 @@ class CustomerController extends AbstractController
      *     name="customers_list"
      * )
      * @Rest\View(statusCode= 200)
+     * @Cache(expires="tomorrow", public=true)
      */
     public function allCustomers(CustomerRepository $customerRepository, PaginatorInterface $paginator, Request $request)
     {
@@ -56,6 +58,7 @@ class CustomerController extends AbstractController
      *     name="customer_show"
      * )
      * @Rest\View(statusCode= 200)
+     * @Cache(expires="tomorrow", public=true)
      */
     public function aCustomer(Customer $customer)
     {
@@ -94,7 +97,6 @@ class CustomerController extends AbstractController
     /**
      * @param Customer $customer
      * @param EntityManagerInterface $manager
-     * @return string
      *
      * @Rest\Delete(
      *     path="/{id}",
@@ -106,9 +108,6 @@ class CustomerController extends AbstractController
     {
         $manager->remove($customer);
         $manager->flush();
-        $successMessage = ['message' => 'Customer deleted !'];
-
-        return $this->json($successMessage);
     }
 
 
@@ -137,11 +136,11 @@ class CustomerController extends AbstractController
         foreach ($customer  as $key => $value) {
             if($key && !empty($value)) {
                 $keyPiece = explode('_', $key);
+
                 foreach ($keyPiece as $index => $piece) {
                     $piece = ucfirst($piece);
                     $keyPiece[$index] = $piece;
                 }
-
                 $name = implode($keyPiece);
                 $setter = 'set'.$name;
                 $customerUpdater->$setter($value);
