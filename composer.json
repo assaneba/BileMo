@@ -21,7 +21,7 @@
         "symfony/validator": "4.4.*",
         "symfony/web-server-bundle": "4.4.*",
         "symfony/yaml": "4.4.*",
-        "willdurand/hateoas-bundle": "^2.1"
+        "willdurand/hateoas-bundle": "dev-master"
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.3",

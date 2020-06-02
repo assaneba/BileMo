@@ -6,19 +6,28 @@ use App\Entity\Product;
 use App\Repository\ProductRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Knp\Component\Pager\PaginatorInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class ProductController
  * @package App\Controller
- * @Route("/api/products", name="api")
+ * @Route("/api/products")
  */
 class ProductController extends AbstractController
 {
+    private $repo;
+    private $paginate;
+
+    public function __construct(ProductRepository $productRepository, PaginatorInterface $paginator)
+    {
+        $this->repo     = $productRepository;
+        $this->paginate = $paginator;
+    }
 
     /**
      * @param ProductRepository $productRepository
@@ -34,13 +43,21 @@ class ProductController extends AbstractController
      *     statusCode= 200,
      *     serializerGroups={"list"}
      * )
-     * @Cache(expires="tomorrow", public=true)
      */
-    public function allProducts(ProductRepository $productRepository, PaginatorInterface $paginator, Request $request)
+    public function allProducts(Request $request)
     {
-        $query = $productRepository->allProductsQuery();
-        $paginatedProducts = $paginator->paginate(
-            $query,
+        $cache = new FilesystemAdapter();
+
+        $value = $cache->get('product_list_cache', function (ItemInterface $item) {
+            $item->expiresAfter(3600);
+
+            $query = $this->repo->allProductsQuery();
+
+            return $query;
+        });
+
+        $paginatedProducts = $this->paginate->paginate(
+            $value,
             $request->query->getInt('page', 1),
             7
         );
@@ -57,14 +74,12 @@ class ProductController extends AbstractController
      *     name="product_show",
      *     requirements={"id"="\d+"}
      * )
-     * @Rest\View(
-     *     statusCode= 200,
-     *     serializerGroups={"detail"}
-     * )
-     * @Cache(expires="tomorrow", public=true)
+     * @Rest\View(statusCode= 200)
+     *
      */
     public function aProduct(Product $product)
     {
+
         return $product;
     }
 }

@@ -23,7 +23,6 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class CustomerController extends AbstractController
 {
-
     /**
      * @param CustomerRepository $customerRepository
      * @param PaginatorInterface $paginator
@@ -35,7 +34,6 @@ class CustomerController extends AbstractController
      *     name="customers_list"
      * )
      * @Rest\View(statusCode= 200)
-     * @Cache(expires="tomorrow", public=true)
      */
     public function allCustomers(CustomerRepository $customerRepository, PaginatorInterface $paginator, Request $request)
     {
@@ -58,7 +56,6 @@ class CustomerController extends AbstractController
      *     name="customer_show"
      * )
      * @Rest\View(statusCode= 200)
-     * @Cache(expires="tomorrow", public=true)
      */
     public function aCustomer(Customer $customer)
     {

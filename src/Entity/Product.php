@@ -6,9 +6,20 @@ use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
+ *
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "product_show",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true,
+ *      ),
+ *  exclusion = @Hateoas\Exclusion(groups={"list"})
+ * )
  *
  */
 class Product
@@ -18,6 +29,7 @@ class Product
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      * @Serializer\Groups({"list", "detail"})
+     *
      */
     private $id;
 
@@ -26,6 +38,7 @@ class Product
      * @Serializer\Groups({"list", "detail"})
      * @Assert\NotBlank()
      * @Assert\Length(max="25", maxMessage="Too much caracters for model name")
+     *
      */
     private $model;
 

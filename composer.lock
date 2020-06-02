@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b3d1fbfa409b0f01ba444b39b929125b",
+    "content-hash": "45ee3dc2520a7be1a5af933cd0bf2b59",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -6124,16 +6124,16 @@
         },
         {
             "name": "willdurand/hateoas-bundle",
-            "version": "2.1.0",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/willdurand/BazingaHateoasBundle.git",
-                "reference": "d1653650257a632110374361cba74cb0e0d45580"
+                "reference": "d06c790f5b071856e27bf1089dfe00a49b197c49"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/willdurand/BazingaHateoasBundle/zipball/d1653650257a632110374361cba74cb0e0d45580",
-                "reference": "d1653650257a632110374361cba74cb0e0d45580",
+                "url": "https://api.github.com/repos/willdurand/BazingaHateoasBundle/zipball/d06c790f5b071856e27bf1089dfe00a49b197c49",
+                "reference": "d06c790f5b071856e27bf1089dfe00a49b197c49",
                 "shasum": ""
             },
             "require": {
@@ -6175,7 +6175,7 @@
                 "HATEOAS",
                 "rest"
             ],
-            "time": "2019-12-07T14:28:27+00:00"
+            "time": "2020-03-31T12:15:13+00:00"
         },
         {
             "name": "willdurand/jsonp-callback-validator",
@@ -6639,7 +6639,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "willdurand/hateoas-bundle": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {

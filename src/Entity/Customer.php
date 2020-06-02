@@ -7,11 +7,45 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
+use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=CustomerRepository::class)
  *
  * @Serializer\ExclusionPolicy("All")
+ *
+ * @Hateoas\Relation(
+ *      "self",
+ *      href = @Hateoas\Route(
+ *          "customer_show",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true,
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      "add",
+ *      href = @Hateoas\Route(
+ *          "customer_add",
+ *          absolute = true,
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      "modify",
+ *      href = @Hateoas\Route(
+ *          "customer_update",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true,
+ *      )
+ * )
+ * @Hateoas\Relation(
+ *      "delete",
+ *      href = @Hateoas\Route(
+ *          "customer_delete",
+ *          parameters = { "id" = "expr(object.getId())" },
+ *          absolute = true,
+ *      )
+ * )
+ *
  */
 class Customer
 {
