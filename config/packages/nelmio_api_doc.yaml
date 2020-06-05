@@ -1,0 +1,24 @@
+nelmio_api_doc:
+  areas:
+    path_patterns: # an array of regexps
+      - ^/api(?!/doc$)
+    host_patterns:
+      - ^api\.
+  documentation:
+    servers:
+      - url: http://127.0.0.1:8000/api/doc
+        description: API over HTTP
+      - url: https://127.0.0.1:8000/api/doc
+        description: API over HTTPS
+    info:
+      title: BileMo
+      description: BileMo vend des smartphones haut de gamme
+      version: 1.0.0
+    components:
+      securitySchemes:
+        Bearer:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT
+    security:
+      - Bearer: []

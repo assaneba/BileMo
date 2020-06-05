@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass=UserRepository::class)
- * @Serializer\ExclusionPolicy()
+ * @Serializer\ExclusionPolicy("All")
  */
 class User implements UserInterface
 {
@@ -34,6 +34,8 @@ class User implements UserInterface
 
     /**
      * @ORM\Column(type="json")
+     *
+     * @Serializer\Expose
      */
     private $roles = [];
 
@@ -41,6 +43,7 @@ class User implements UserInterface
      * @var string The hashed password
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
+     *
      */
     private $password;
 

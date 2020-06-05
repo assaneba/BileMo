@@ -9,11 +9,14 @@ use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\ArrayTransformerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 /**
  * Class CustomerController
@@ -22,12 +25,20 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
  */
 class CustomerController extends AbstractController
 {
+    private $repo;
+    private $paginator;
+
+    public function __construct(CustomerRepository $customerRepository, PaginatorInterface $paginator)
+    {
+        $this->repo      = $customerRepository;
+        $this->paginator = $paginator;
+    }
 
     /**
-     * @param CustomerRepository $customerRepository
-     * @param PaginatorInterface $paginator
      * @param Request $request
-     * @return iterable
+     * @param CacheInterface $cache
+     * @return mixed
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Rest\Get(
      *     path="/",
@@ -35,33 +46,49 @@ class CustomerController extends AbstractController
      * )
      * @Rest\View(statusCode= 200)
      */
-    public function allCustomers(CustomerRepository $customerRepository, PaginatorInterface $paginator, Request $request)
+    public function allCustomers(Request $request, CacheInterface $cache)
     {
-        $query = $customerRepository->allCustomersQuery($this->getUser());
-        $paginatedProducts = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1),
-            10
-        );
+        $page = $request->query->getInt('page', 1);
 
-        return $paginatedProducts->getItems();
+        $cachedVal = $cache->get('customers_list'.$request->query->get('page'), function (ItemInterface $item)
+                                 use ($page) {
+                        $item->expiresAfter(3600);
+
+                        $query = $this->repo->allCustomersQuery($this->getUser());
+
+                        return  $this->paginator->paginate(
+                                $query,
+                                $page,
+                                10
+                                );
+                    });
+
+        return $cachedVal->getItems();
     }
 
     /**
-     * @param Customer $customer
-     * @return Customer
+     * @param $id
+     * @param CacheInterface $cache
+     * @return mixed
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Rest\Get(
      *     path="/{id}",
-     *     name="customer_show"
+     *     name="customer_show",
+     *     requirements={"id"="\d+"}
      * )
      * @Rest\View(statusCode= 200)
+     *
+     * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
      */
-    public function aCustomer(Customer $customer)
+    public function aCustomer($id, CacheInterface $cache, Customer $customer)
     {
-        return $customer;
-    }
+        return $cache->get('customer'.$id, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(3600);
 
+            return $this->repo->find($id);
+        });
+    }
 
     /**
      * @param Customer $customer
@@ -94,23 +121,20 @@ class CustomerController extends AbstractController
     /**
      * @param Customer $customer
      * @param EntityManagerInterface $manager
-     * @return string
      *
      * @Rest\Delete(
      *     path="/{id}",
      *     name="customer_delete"
      * )
      * @Rest\View(statusCode= 204)
+     *
+     * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
      */
     public function deleteCustomer(Customer $customer, EntityManagerInterface $manager)
     {
         $manager->remove($customer);
         $manager->flush();
-        $successMessage = ['message' => 'Customer deleted !'];
-
-        return $this->json($successMessage);
     }
-
 
     /**
      * @param Customer $customer
@@ -127,6 +151,8 @@ class CustomerController extends AbstractController
      * )
      * @Rest\View(statusCode= 200)
      * @ParamConverter("customer", converter="fos_rest.request_body")
+     *
+     * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
      */
     public function updateCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator, Request $request, ArrayTransformerInterface $arrayTransformer)
     {
@@ -137,11 +163,11 @@ class CustomerController extends AbstractController
         foreach ($customer  as $key => $value) {
             if($key && !empty($value)) {
                 $keyPiece = explode('_', $key);
+
                 foreach ($keyPiece as $index => $piece) {
                     $piece = ucfirst($piece);
                     $keyPiece[$index] = $piece;
                 }
-
                 $name = implode($keyPiece);
                 $setter = 'set'.$name;
                 $customerUpdater->$setter($value);
