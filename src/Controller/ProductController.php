@@ -2,15 +2,13 @@
 
 namespace App\Controller;
 
-use App\Entity\Product;
 use App\Repository\ProductRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
 /**
@@ -30,44 +28,45 @@ class ProductController extends AbstractController
     }
 
     /**
-     * @param ProductRepository $productRepository
-     * @param PaginatorInterface $paginator
+     * @param CacheInterface $cache
      * @param Request $request
-     * @return iterable
+     * @return mixed
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Rest\Get(
      *     path="/",
-     *     name="product_list",
+     *     name="product_list"
      * )
      * @Rest\View(
      *     statusCode= 200,
      *     serializerGroups={"list"}
      * )
      */
-    public function allProducts(Request $request)
+    public function allProducts(CacheInterface $cache, Request $request)
     {
-        $cache = new FilesystemAdapter();
+        $paginationPage = $request->query->getInt('page', 1);
 
-        $value = $cache->get('product_list_cache', function (ItemInterface $item) {
+        $value = $cache->get('product_list'.$request->query->get('page'), function (ItemInterface $item)
+                             use ($paginationPage) {
             $item->expiresAfter(3600);
 
             $query = $this->repo->allProductsQuery();
 
-            return $query;
+            return  $paginatedProducts = $this->paginate->paginate(
+                    $query,
+                    $paginationPage,
+                    7
+                    );
         });
 
-        $paginatedProducts = $this->paginate->paginate(
-            $value,
-            $request->query->getInt('page', 1),
-            7
-        );
-
-        return $paginatedProducts->getItems();
+        return $value->getItems();
     }
 
     /**
-     * @param Product $product
-     * @return Product
+     * @param $id
+     * @param CacheInterface $cache
+     * @return mixed
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Rest\Get(
      *     path="/{id}",
@@ -77,9 +76,12 @@ class ProductController extends AbstractController
      * @Rest\View(statusCode= 200)
      *
      */
-    public function aProduct(Product $product)
+    public function aProduct($id, CacheInterface $cache)
     {
+        return $cache->get('product'.$id, function (ItemInterface $item) use ($id) {
+            $item->expiresAfter(3600);
 
-        return $product;
+            return $this->repo->find($id);
+        });
     }
 }
