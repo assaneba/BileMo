@@ -44,17 +44,17 @@ class ProductController extends AbstractController
      */
     public function allProducts(CacheInterface $cache, Request $request)
     {
-        $paginationPage = $request->query->getInt('page', 1);
+        $page = $request->query->getInt('page', 1);
 
-        $value = $cache->get('product_list'.$request->query->get('page'), function (ItemInterface $item)
-                             use ($paginationPage) {
+        $value = $cache->get('product_list'.$page, function (ItemInterface $item)
+                             use ($page) {
             $item->expiresAfter(3600);
 
             $query = $this->repo->allProductsQuery();
 
             return  $paginatedProducts = $this->paginate->paginate(
                     $query,
-                    $paginationPage,
+                    $page,
                     7
                     );
         });

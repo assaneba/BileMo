@@ -50,7 +50,7 @@ class CustomerController extends AbstractController
     {
         $page = $request->query->getInt('page', 1);
 
-        $cachedVal = $cache->get('customers_list'.$request->query->get('page'), function (ItemInterface $item)
+        $cachedVal = $cache->get('customers_list'.$page, function (ItemInterface $item)
                                  use ($page) {
                         $item->expiresAfter(3600);
 
@@ -94,8 +94,9 @@ class CustomerController extends AbstractController
      * @param Customer $customer
      * @param EntityManagerInterface $manager
      * @param ValidatorInterface $validator
+     * @param CacheInterface $cache
      * @return Customer
-     * @throws \Exception
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Rest\Post(
      *     path="/",
@@ -103,8 +104,10 @@ class CustomerController extends AbstractController
      * )
      * @Rest\View(statusCode= 201)
      * @ParamConverter("customer", converter="fos_rest.request_body")
+     *
      */
-    public function addCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator)
+    public function addCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator,
+                                CacheInterface $cache)
     {
         $errors = $validator->validate($customer);
         if(count($errors)) {
@@ -115,12 +118,16 @@ class CustomerController extends AbstractController
         $manager->persist($customer);
         $manager->flush();
 
+        $this->deleteCache($cache);
+
         return $customer;
     }
 
     /**
      * @param Customer $customer
      * @param EntityManagerInterface $manager
+     * @param CacheInterface $cache
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Rest\Delete(
      *     path="/{id}",
@@ -130,8 +137,10 @@ class CustomerController extends AbstractController
      *
      * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
      */
-    public function deleteCustomer(Customer $customer, EntityManagerInterface $manager)
+    public function deleteCustomer(Customer $customer, EntityManagerInterface $manager, CacheInterface $cache)
     {
+        $this->deleteCache($cache, $customer->getId());
+
         $manager->remove($customer);
         $manager->flush();
     }
@@ -142,8 +151,9 @@ class CustomerController extends AbstractController
      * @param ValidatorInterface $validator
      * @param Request $request
      * @param ArrayTransformerInterface $arrayTransformer
+     * @param CacheInterface $cache
      * @return object|null
-     * @throws \Exception
+     * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Rest\Put(
      *     path="/{id}",
@@ -153,8 +163,10 @@ class CustomerController extends AbstractController
      * @ParamConverter("customer", converter="fos_rest.request_body")
      *
      * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
+     *
      */
-    public function updateCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator, Request $request, ArrayTransformerInterface $arrayTransformer)
+    public function updateCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator,
+                                   Request $request, ArrayTransformerInterface $arrayTransformer, CacheInterface $cache)
     {
         $customerUpdater = $manager->getRepository(Customer::class)->find($request->get('id'));
 
@@ -163,23 +175,41 @@ class CustomerController extends AbstractController
         foreach ($customer  as $key => $value) {
             if($key && !empty($value)) {
                 $keyPiece = explode('_', $key);
-
                 foreach ($keyPiece as $index => $piece) {
                     $piece = ucfirst($piece);
                     $keyPiece[$index] = $piece;
                 }
-                $name = implode($keyPiece);
-                $setter = 'set'.$name;
+                $setter = 'set'.implode($keyPiece);
                 $customerUpdater->$setter($value);
             }
         }
-
         $errors = $validator->validate($customerUpdater);
         if (count($errors)) {
             throw new \Exception('Invalid argument(s) detected');
         }
+        $this->deleteCache($cache, $customerUpdater->getId());
         $manager->flush();
 
         return $customerUpdater;
+    }
+
+    /**
+     * @param CacheInterface $cache
+     * @param null $id
+     * @throws \Psr\Cache\InvalidArgumentException
+     */
+    public function deleteCache(CacheInterface $cache, $id = null)
+    {
+        if ($id) {
+            $cache->delete('customer'.$id);
+        }
+
+        $customerCount = count($this->repo->findAll());
+
+        $pageCount = (int) ceil($customerCount/10);
+
+        for ($i=1; $i < $pageCount; $i++) {
+             $cache->delete('customers_list'.$i);
+        }
     }
 }
