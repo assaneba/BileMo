@@ -2,8 +2,8 @@ nelmio_api_doc:
   areas:
     path_patterns: # an array of regexps
       - ^/api(?!/doc$)
-    host_patterns:
-      - ^api\.
+      - ^/api/products
+      - ^/api/customers
   documentation:
     servers:
       - url: http://127.0.0.1:8000/api/doc
@@ -17,7 +17,7 @@ nelmio_api_doc:
     components:
       securitySchemes:
         Bearer:
-        type: http
+        type: https
         scheme: bearer
         bearerFormat: JWT
     security:

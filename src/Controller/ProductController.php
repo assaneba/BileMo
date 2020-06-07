@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Swagger\Annotations as OA;
 
 /**
  * Class ProductController
@@ -41,20 +42,24 @@ class ProductController extends AbstractController
      *     statusCode= 200,
      *     serializerGroups={"list"}
      * )
+     *
+     * @OA\Get(
+     *     @OA\Response(response="200", description="Return a list of products")
+     * )
      */
     public function allProducts(CacheInterface $cache, Request $request)
     {
-        $paginationPage = $request->query->getInt('page', 1);
+        $page = $request->query->getInt('page', 1);
 
-        $value = $cache->get('product_list'.$request->query->get('page'), function (ItemInterface $item)
-                             use ($paginationPage) {
+        $value = $cache->get('product_list'.$page, function (ItemInterface $item)
+                             use ($page) {
             $item->expiresAfter(3600);
 
             $query = $this->repo->allProductsQuery();
 
             return  $paginatedProducts = $this->paginate->paginate(
                     $query,
-                    $paginationPage,
+                    $page,
                     7
                     );
         });
@@ -75,6 +80,15 @@ class ProductController extends AbstractController
      * )
      * @Rest\View(statusCode= 200)
      *
+     * @OA\Get(
+     *     @OA\Response(response="200", description="Return a specific product details")
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     type="number",
+     *     description="The id of the product"
+     * )
      */
     public function aProduct($id, CacheInterface $cache)
     {
