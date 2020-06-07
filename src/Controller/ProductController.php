@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Swagger\Annotations as OA;
 
 /**
  * Class ProductController
@@ -40,6 +41,10 @@ class ProductController extends AbstractController
      * @Rest\View(
      *     statusCode= 200,
      *     serializerGroups={"list"}
+     * )
+     *
+     * @OA\Get(
+     *     @OA\Response(response="200", description="Return a list of products")
      * )
      */
     public function allProducts(CacheInterface $cache, Request $request)
@@ -75,6 +80,15 @@ class ProductController extends AbstractController
      * )
      * @Rest\View(statusCode= 200)
      *
+     * @OA\Get(
+     *     @OA\Response(response="200", description="Return a specific product details")
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     type="number",
+     *     description="The id of the product"
+     * )
      */
     public function aProduct($id, CacheInterface $cache)
     {

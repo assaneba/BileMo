@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Customer;
 use App\Repository\CustomerRepository;
+use App\Service\CacheDeleter;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use JMS\Serializer\ArrayTransformerInterface;
@@ -17,6 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
+use Swagger\Annotations as OA;
 
 /**
  * Class CustomerController
@@ -45,6 +47,11 @@ class CustomerController extends AbstractController
      *     name="customers_list"
      * )
      * @Rest\View(statusCode= 200)
+     *
+     * @OA\Get(
+     *     @OA\Response(response="200", description="List of customers")
+     * )
+     *
      */
     public function allCustomers(Request $request, CacheInterface $cache)
     {
@@ -80,6 +87,16 @@ class CustomerController extends AbstractController
      * @Rest\View(statusCode= 200)
      *
      * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
+     *
+     * @OA\Get(
+     *     @OA\Response(response="200", description="Return a specific customer details")
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     type="number",
+     *     description="The id of the customer"
+     * )
      */
     public function aCustomer($id, CacheInterface $cache, Customer $customer)
     {
@@ -105,9 +122,12 @@ class CustomerController extends AbstractController
      * @Rest\View(statusCode= 201)
      * @ParamConverter("customer", converter="fos_rest.request_body")
      *
+     * @OA\Post(
+     *     @OA\Response(response="201", description="Return a new customer")
+     * )
      */
     public function addCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator,
-                                CacheInterface $cache)
+                                CacheInterface $cache, CacheDeleter $cacheDeleter)
     {
         $errors = $validator->validate($customer);
         if(count($errors)) {
@@ -118,7 +138,7 @@ class CustomerController extends AbstractController
         $manager->persist($customer);
         $manager->flush();
 
-        $this->deleteCache($cache);
+        $cacheDeleter->deleteCache($cache);
 
         return $customer;
     }
@@ -136,10 +156,20 @@ class CustomerController extends AbstractController
      * @Rest\View(statusCode= 204)
      *
      * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
+     *
+     * @OA\Delete(
+     *     @OA\Response(response="204", description="Delete a specific customer")
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     type="number",
+     *     description="The id of the customer"
+     * )
      */
-    public function deleteCustomer(Customer $customer, EntityManagerInterface $manager, CacheInterface $cache)
+    public function deleteCustomer(Customer $customer, EntityManagerInterface $manager, CacheInterface $cache, CacheDeleter $cacheDeleter)
     {
-        $this->deleteCache($cache, $customer->getId());
+        $cacheDeleter->deleteCache($cache, $customer->getId());
 
         $manager->remove($customer);
         $manager->flush();
@@ -164,9 +194,19 @@ class CustomerController extends AbstractController
      *
      * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
      *
+     * @OA\Put(
+     *     @OA\Response(response="200", description="Update a specific customer")
+     * )
+     * @OA\Parameter(
+     *     name="id",
+     *     in="path",
+     *     type="number",
+     *     description="The id of the customer"
+     * )
      */
     public function updateCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator,
-                                   Request $request, ArrayTransformerInterface $arrayTransformer, CacheInterface $cache)
+                                   Request $request, ArrayTransformerInterface $arrayTransformer, CacheInterface $cache,
+                                   CacheDeleter $cacheDeleter)
     {
         $customerUpdater = $manager->getRepository(Customer::class)->find($request->get('id'));
 
@@ -187,29 +227,9 @@ class CustomerController extends AbstractController
         if (count($errors)) {
             throw new \Exception('Invalid argument(s) detected');
         }
-        $this->deleteCache($cache, $customerUpdater->getId());
+        $cacheDeleter->deleteCache($cache, $customerUpdater->getId());
         $manager->flush();
 
         return $customerUpdater;
-    }
-
-    /**
-     * @param CacheInterface $cache
-     * @param null $id
-     * @throws \Psr\Cache\InvalidArgumentException
-     */
-    public function deleteCache(CacheInterface $cache, $id = null)
-    {
-        if ($id) {
-            $cache->delete('customer'.$id);
-        }
-
-        $customerCount = count($this->repo->findAll());
-
-        $pageCount = (int) ceil($customerCount/10);
-
-        for ($i=1; $i < $pageCount; $i++) {
-             $cache->delete('customers_list'.$i);
-        }
     }
 }
