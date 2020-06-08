@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ProductRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use JMS\Serializer\Annotation as Serializer;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -10,6 +12,8 @@ use Hateoas\Configuration\Annotation as Hateoas;
 
 /**
  * @ORM\Entity(repositoryClass=ProductRepository::class)
+ *
+ * @Serializer\ExclusionPolicy("All")
  *
  * @Hateoas\Relation(
  *      "self",
@@ -30,6 +34,7 @@ class Product
      * @ORM\Column(type="integer")
      * @Serializer\Groups({"list", "detail"})
      *
+     * @Serializer\Expose
      */
     private $id;
 
@@ -39,6 +44,7 @@ class Product
      * @Assert\NotBlank()
      * @Assert\Length(max="25", maxMessage="Too much caracters for model name")
      *
+     * @Serializer\Expose
      */
     private $model;
 
@@ -47,6 +53,8 @@ class Product
      * @Serializer\Groups({"list", "detail"})
      * @Assert\NotBlank()
      * @Assert\Length(max="25", maxMessage="Too much caracters for brand name")
+     *
+     * @Serializer\Expose
      */
     private $brand;
 
@@ -55,6 +63,8 @@ class Product
      * @Serializer\Groups({"list", "detail"})
      * @Assert\NotBlank()
      * @Assert\Range(min="0")
+     *
+     * @Serializer\Expose
      */
     private $price;
 
@@ -68,8 +78,22 @@ class Product
     /**
      * @ORM\Column(type="date")
      * @Serializer\Groups({"detail"})
+     *
+     * @Serializer\Expose
      */
     private $releaseDate;
+
+    /**
+     * @ORM\ManyToMany(targetEntity=User::class, inversedBy="products")
+     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinTable(name="product_user")
+     */
+    private $users;
+
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -135,4 +159,31 @@ class Product
 
         return $this;
     }
+
+    /**
+     * @return Collection|User[]
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): self
+    {
+        if (!$this->users->contains($user)) {
+            $this->users[] = $user;
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): self
+    {
+        if ($this->users->contains($user)) {
+            $this->users->removeElement($user);
+        }
+
+        return $this;
+    }
+
 }

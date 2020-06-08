@@ -20,17 +20,6 @@ class AppFixtures extends Fixture
 
     public function load(ObjectManager $manager)
     {
-        foreach ($this->productData() as $aProductArray) {
-            $product = new Product();
-            $product->setBrand($aProductArray["brand"])
-                ->setModel($aProductArray["model"])
-                ->setPrice($aProductArray["price"])
-                ->setDescription($aProductArray["description"])
-                ->setReleaseDate(new \DateTime($aProductArray["releaseDate"]))
-            ;
-            $manager->persist($product);
-        }
-
         foreach ($this->userData() as $aUserArray) {
             $user = new User();
             $password = $this->encoder->encodePassword($user, $aUserArray["password"]);
@@ -39,6 +28,18 @@ class AppFixtures extends Fixture
                  ->setPassword($password)
             ;
             $manager->persist($user);
+        }
+
+        foreach ($this->productData() as $aProductArray) {
+            $product = new Product();
+            $product->setBrand($aProductArray["brand"])
+                ->setModel($aProductArray["model"])
+                ->setPrice($aProductArray["price"])
+                ->setDescription($aProductArray["description"])
+                ->setReleaseDate(new \DateTime($aProductArray["releaseDate"]))
+                ->addUser($user)
+            ;
+            $manager->persist($product);
         }
 
         foreach ($this->customerData() as $aCustomArray) {
