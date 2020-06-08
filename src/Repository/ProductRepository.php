@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Entity\Product;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Entity\User;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @method Product|null find($id, $lockMode = null, $lockVersion = null)
@@ -19,9 +21,15 @@ class ProductRepository extends ServiceEntityRepository
         parent::__construct($registry, Product::class);
     }
 
-    public function allProductsQuery()
+    /**
+     * @param User $user
+     * @return \Doctrine\ORM\Query
+     */
+    public function allProductsQuery(UserInterface $user)
     {
         return $this->createQueryBuilder('p')
+            ->where( ':userId MEMBER OF p.users')
+            ->setParameter('userId', $user->getId())
             ->orderBy('p.id', 'ASC')
             ->getQuery()
             ;

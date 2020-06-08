@@ -7,7 +7,6 @@ use App\Repository\CustomerRepository;
 use App\Service\CacheDeleter;
 use Doctrine\ORM\EntityManagerInterface;
 use FOS\RestBundle\Controller\Annotations as Rest;
-use JMS\Serializer\ArrayTransformerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -176,23 +175,19 @@ class CustomerController extends AbstractController
     }
 
     /**
-     * @param Customer $customer
      * @param EntityManagerInterface $manager
      * @param ValidatorInterface $validator
      * @param Request $request
-     * @param ArrayTransformerInterface $arrayTransformer
      * @param CacheInterface $cache
      * @return object|null
      * @throws \Psr\Cache\InvalidArgumentException
      *
      * @Rest\Put(
      *     path="/{id}",
-     *     name="customer_update"
+     *     name="customer_update",
+     *     requirements={"id"="\d+"}
      * )
      * @Rest\View(statusCode= 200)
-     * @ParamConverter("customer", converter="fos_rest.request_body")
-     *
-     * @Security("is_granted('ROLE_USER') && customer.getUser() == user")
      *
      * @OA\Put(
      *     @OA\Response(response="200", description="Update a specific customer")
@@ -204,20 +199,17 @@ class CustomerController extends AbstractController
      *     description="The id of the customer"
      * )
      */
-    public function updateCustomer(Customer $customer, EntityManagerInterface $manager, ValidatorInterface $validator,
-                                   Request $request, ArrayTransformerInterface $arrayTransformer, CacheInterface $cache,
-                                   CacheDeleter $cacheDeleter)
+    public function updateCustomer(EntityManagerInterface $manager, ValidatorInterface $validator,
+                                   Request $request, CacheInterface $cache, CacheDeleter $cacheDeleter)
     {
         $customerUpdater = $manager->getRepository(Customer::class)->find($request->get('id'));
 
         // Check if some values have changed and set them in existing object
-        $customer = $arrayTransformer->toArray($customer);
-        foreach ($customer  as $key => $value) {
+        foreach($request->request->all() as $key => $value ) {
             if($key && !empty($value)) {
                 $keyPiece = explode('_', $key);
                 foreach ($keyPiece as $index => $piece) {
-                    $piece = ucfirst($piece);
-                    $keyPiece[$index] = $piece;
+                    $keyPiece[$index] = ucfirst($piece);
                 }
                 $setter = 'set'.implode($keyPiece);
                 $customerUpdater->$setter($value);

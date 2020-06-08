@@ -2,9 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Product;
 use App\Repository\ProductRepository;
 use FOS\RestBundle\Controller\Annotations as Rest;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -55,9 +57,9 @@ class ProductController extends AbstractController
                              use ($page) {
             $item->expiresAfter(3600);
 
-            $query = $this->repo->allProductsQuery();
+            $query = $this->repo->allProductsQuery($this->getUser());
 
-            return  $paginatedProducts = $this->paginate->paginate(
+            return  $this->paginate->paginate(
                     $query,
                     $page,
                     7
@@ -89,8 +91,10 @@ class ProductController extends AbstractController
      *     type="number",
      *     description="The id of the product"
      * )
+     *
+     * @Security("is_granted('ROLE_USER') && user == product.getUsers().first()")
      */
-    public function aProduct($id, CacheInterface $cache)
+    public function aProduct($id, CacheInterface $cache, Product $product)
     {
         return $cache->get('product'.$id, function (ItemInterface $item) use ($id) {
             $item->expiresAfter(3600);
