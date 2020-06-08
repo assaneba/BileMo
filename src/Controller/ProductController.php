@@ -59,7 +59,7 @@ class ProductController extends AbstractController
 
             $query = $this->repo->allProductsQuery($this->getUser());
 
-            return  $paginatedProducts = $this->paginate->paginate(
+            return  $this->paginate->paginate(
                     $query,
                     $page,
                     7

@@ -33,6 +33,6 @@ class UserController extends AbstractController
      */
     public function viewProfile()
     {
-        return $user = $this->getUser();
+        return $this->getUser();
     }
 }
